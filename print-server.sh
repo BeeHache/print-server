@@ -1,44 +1,73 @@
 #!/bin/sh
 
-NAME="print-server"
 PWD="$( cd "$(dirname "$0")" ; pwd -P )"
 BASENAME=`basename -s .sh $0`
-CONF="${PWD}/cupsd.conf"
-CID_FILE="${PWD}/${BASENAME}.cid"
+NAME=$BASENAME
+CONF="${PWD}/conf"
+LOGS="${PWD}/logs"
+INITLOG="${PWD}/init.log"
 VOLUME="${NAME}-data"
 
+cmd() {
+     	sudo docker container exec -t -i $NAME $*
+}
+
 build() {
-	docker build -t beehache/$NAME .
+	sudo docker build -t beehache/$NAME .
 }
 
 start() {
-	docker run -d --rm -p $1:631 -v $VOLUME:/var/spool/cups -v $CONF:/etc/cups/cupsd.conf:ro beehache/$NAME > $CID_FILE
+	mkdir -p $LOGS
+	touch $INITLOG
+	sudo docker run -d \
+		--rm \
+		--name $NAME \
+		-p 161:161/udp \
+		-p 161:161/tcp \
+		-p 162:162/udp \
+		-p 162:162/tcp \
+		-p 631:631/udp \
+		-p 631:631/tcp \
+		-p 137:137/udp \
+		-p 137:137/tcp \
+		-p 139:139/udp \
+		-p 139:139/tcp \
+		-p 445:445/udp \
+		-p 445:445/tcp \
+		-p 5353:5353/udp \
+		-p 5353:5353/tcp \
+		--network host \
+		-v $VOLUME:/var/spool/cups \
+		-v $CONF:/etc/cups \
+		-v $LOGS:/var/log \
+		-v $INITLOG:/app/init-log \
+		beehache/$NAME
 }
 
 stop() {
-	local cid=`cat $CID_FILE`
-	[ -f $CID_FILE ] && docker container stop $cid && rm $CID_FILE
+	sudo docker container stop $NAME
 }
 
+
 usage() {
-	echo "Usage : $BASENAME [-s | --start] PORT | [-S | --stop] | [-b | --build]"
+	echo "Usage : ${BASENAME}.sh [-s | --start] | [-S | --stop] | [-b | --build] | [[-e | --exec] ...]"
 }
 
 case $1 in
-	'-b' | '--build')
+	'-b' | 'build')
 		build
 		;;
 
-	'-S' | '--stop')
+	'-S' | 'stop')
 		stop
 		;;
 
-	'-s' | '--start')
-		if [ -z $2 ]; then
-			usage
-		else 
-			start $2
-		fi
+	'-s' | 'start')
+		start
+		;;
+	'-e' | 'exec')
+		shift 
+		cmd $@
 		;;
 	*)
 		usage

@@ -1,4 +1,11 @@
 #! /bin/sh
 
-/usr/sbin/cupsd -f
+echo "Starting ..."
+service inetutils-syslogd start
+service dbus start
+service avahi-daemon start
+service cups-browsed start
+service cups start
 
+echo " ... running"
+sleep infinity
