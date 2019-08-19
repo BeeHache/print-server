@@ -1,24 +1,26 @@
 #!/bin/sh
 
+VERSION=0.0.1
 PWD="$( cd "$(dirname "$0")" ; pwd -P )"
 BASENAME=`basename -s .sh $0`
 NAME=$BASENAME
 CONF="${PWD}/conf"
 LOGS="${PWD}/logs"
-INITLOG="${PWD}/init.log"
 VOLUME="${NAME}-data"
+DEFAULT_USER="print"
+DEFAULT_GROUP="print"
 
 cmd() {
      	sudo docker container exec -t -i $NAME $*
 }
 
 build() {
-	sudo docker build -t beehache/$NAME .
+	sudo docker build -t beehache/$NAME:$VERSION .
 }
 
 start() {
 	mkdir -p $LOGS
-	touch $INITLOG
+	mkdir -p $CONF/ssl $CONF/ppd
 	sudo docker run -d \
 		--rm \
 		--name $NAME \
@@ -40,12 +42,16 @@ start() {
 		-v $VOLUME:/var/spool/cups \
 		-v $CONF:/etc/cups \
 		-v $LOGS:/var/log \
-		-v $INITLOG:/app/init-log \
-		beehache/$NAME
+		beehache/$NAME:$VERSION
 }
 
 stop() {
 	sudo docker container stop $NAME
+}
+
+restart() {
+	stop
+	start
 }
 
 
