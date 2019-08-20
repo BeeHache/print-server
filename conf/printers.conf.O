@@ -4,12 +4,11 @@
 <Printer Brother_HL_5250DN_series>
 UUID urn:uuid:aaa9bde2-efd9-350a-43fd-1267c5a20987
 Info Brother_HL_5250DN_series
-MakeModel Brother HL-5250DN series, driverless, cups-filters 1.21.6
 DeviceURI ipp://hl5250dn.local:631/duerqxesz5090
 State Idle
 StateTime 1565927869
 ConfigTime 1566095065
-Type 12372
+Type 4
 Accepting Yes
 Shared No
 JobSheets none none
@@ -22,12 +21,11 @@ ErrorPolicy retry-job
 <DefaultPrinter HL5250DN>
 UUID urn:uuid:8c7519f5-7ba7-3929-6b0f-a92fdb485380
 Info HL5250DN
-MakeModel Brother HL-5250DN BR-Script3
 DeviceURI socket://hl5250dn.lan
 State Idle
 StateTime 1565848384
 ConfigTime 1565848365
-Type 8433748
+Type 8388612
 Accepting Yes
 Shared Yes
 JobSheets none none
@@ -46,13 +44,11 @@ Attribute marker-change-time 1565848384
 UUID urn:uuid:4cab3582-91d1-3e54-483d-b830dcf32f17
 AuthInfoRequired none
 Info Officejet_6700_2A700F_
-MakeModel Officejet 6700 - IPP Everywhere
 DeviceURI ipp://officejet6700.lan:631/ipp/printer
 State Idle
-StateTime 1566096582
+StateTime 1566262540
 ConfigTime 1565846235
-Reason cups-waiting-for-job-completed
-Type 4188
+Type 4
 Accepting Yes
 Shared Yes
 JobSheets none none
@@ -67,17 +63,16 @@ Attribute marker-low-levels 0,0,0,0
 Attribute marker-high-levels 100,100,100,100
 Attribute marker-names black ink,cyan ink,magenta ink,yellow ink
 Attribute marker-types inkCartridge,inkCartridge,inkCartridge,inkCartridge
-Attribute marker-change-time 1566096584
+Attribute marker-change-time 1566262539
 </Printer>
 <Printer Officejet_6700_2A700F_@HP2A700F.local>
 UUID urn:uuid:77c6a013-7c91-396a-43af-4e07bd642f7c
 Info Officejet_6700_2A700F_@HP2A700F.local
-MakeModel HP Officejet 6700, driverless, cups-filters 1.21.6
 DeviceURI ipp://HP2A700F.local:631/ipp/printer
 State Idle
 StateTime 1565956915
 ConfigTime 1566095068
-Type 4188
+Type 4
 Accepting Yes
 Shared No
 JobSheets none none

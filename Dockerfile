@@ -1,8 +1,8 @@
 FROM phusion/baseimage:0.11
 
-ARG USER=print
-ARG GROUP=print
-ARG PASSWD=print
+ARG PSUSER=print
+ARG PSGROUP=print
+ARG PSPASSWD=print
 
 # Install Packages (basic tools, cups, basic drivers, HP drivers)
 RUN apt-get update && apt-get install -y \
@@ -30,13 +30,18 @@ RUN adduser \
 --system \
 --no-create-home \
 --shell /sbin/nologin \
-${USER} \
-&& addgroup ${GROUP} \
-&& adduser ${USER} ${GROUP} \
-&& adduser lp ${GROUP} \
-&& adduser lpadmin ${GROUP}
+$PSUSER \
+&& addgroup $PSGROUP \
+&& adduser \
+--system \
+--no-create-home \
+--shell /sbin/nologin \
+lpadmin \
+&& adduser $PSUSER $PSGROUP \
+&& adduser lp $PSGROUP \
+&& adduser lpadmin $PSGROUP 
 
-RUN echo "${USER}:${PASSWD}" | chpasswd
+RUN echo $PSUSER:$PSPASSWD | chpasswd
 
 EXPOSE 631/udp 631/tcp 161/udp 161/tcp 162/udp 162/tcp
 
