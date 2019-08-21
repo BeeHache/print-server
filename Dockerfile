@@ -6,10 +6,10 @@ ARG PSPASSWD=print
 
 # Install Packages (basic tools, cups, basic drivers, HP drivers)
 RUN apt-get update && apt-get install -y \
-cups-daemon=2.2.7-1ubuntu2.6 \
+cups-daemon=2.2.7-1ubuntu2.7 \
 cups-browsed=1.20.2-0ubuntu3.1 \
 cups-filters=1.20.2-0ubuntu3.1 \
-cups-ppdc=2.2.7-1ubuntu2.2 \
+cups-ppdc=2.2.7-1ubuntu2.7 \
 printer-driver-gutenprint=5.2.13-2 \
 printer-driver-hpcups=3.17.10+repack0-5 \
 printer-driver-cups-pdf=3.0.1-5 \
@@ -58,5 +58,7 @@ RUN chmod +x /etc/my_init.d/*
 RUN mkdir -p /etc/service/print-service
 COPY scripts/run /etc/service/print-service/run
 RUN chmod +x /etc/service/print-service/run
+
+COPY cupsd.conf /etc/cups/cupsd.conf
 
 CMD ["/sbin/my_init"]
