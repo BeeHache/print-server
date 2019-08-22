@@ -59,6 +59,7 @@ RUN mkdir -p /etc/service/print-service
 COPY scripts/run /etc/service/print-service/run
 RUN chmod +x /etc/service/print-service/run
 
-COPY cupsd.conf /etc/cups/cupsd.conf
+COPY tools /tools
+RUN chmod -R +x /tools
 
 CMD ["/sbin/my_init"]
