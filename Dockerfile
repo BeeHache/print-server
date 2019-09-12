@@ -18,13 +18,9 @@ avahi-daemon=0.7-3.1ubuntu1.2 \
 colord=1.3.3-2build1 \
 gutenprint-locales=5.2.13-2 \
 sane-utils=1.0.27-1~experimental3ubuntu2 \
+google-cloud-print-connector=1.12-1 \
 && apt-get clean \
 && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
-#COPY --from=beehache/gcp \
-#/go/bin/gcp-cups-connector \
-#/go/bin/gcp-connector-util \
-#/app/
 
 RUN adduser \
 --system \
@@ -41,6 +37,8 @@ lpadmin \
 && adduser lp $PSGROUP \
 && adduser lpadmin $PSGROUP 
 
+RUN useradd -s /usr/sbin/nologin -r -M cloud-print-connector
+
 RUN echo $PSUSER:$PSPASSWD | chpasswd
 
 EXPOSE 631/udp 631/tcp 161/udp 161/tcp 162/udp 162/tcp
@@ -52,12 +50,23 @@ EXPOSE 137/udp 139/tcp 445/tcp
 EXPOSE 5353/udp
 
 RUN mkdir -p /etc/my_init.d
-COPY scripts/*.sh /etc/my_init.d/
+COPY scripts/11_dbus.sh  \
+scripts/12_avahi.sh  \
+scripts/13_cups-browsed.sh  \
+scripts/14_cupsd.sh \
+scripts/15_gcp.sh \
+/etc/my_init.d/
 RUN chmod +x /etc/my_init.d/*
+
 
 RUN mkdir -p /etc/service/print-service
 COPY scripts/run /etc/service/print-service/run
 RUN chmod +x /etc/service/print-service/run
+
+#GCP
+COPY scripts/gcp /etc/init.d/
+RUN chmod +x /etc/init.d/gcp
+RUN mkdir -p /etc/gcp
 
 COPY tools /tools
 RUN chmod -R +x /tools

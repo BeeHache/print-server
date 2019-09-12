@@ -1,13 +1,17 @@
 #!/bin/sh
 
-VERSION=0.0.1
+VERSION=0.0.2
 PWD="$( cd "$(dirname "$0")" ; pwd -P )"
 BASENAME=`basename -s .sh $0`
 NAME=$BASENAME
-DATA_VOLUME="${NAME}-data"
-CONF_VOLUME="${NAME}-conf"
-CACHE_VOLUME="${NAME}-cache"
-SHARE_VOLUME="${NAME}-share"
+CUPS_DATA_VOLUME="${NAME}-data"
+CUPS_CONF_VOLUME="${NAME}-conf"
+CUPS_CACHE_VOLUME="${NAME}-cache"
+CUPS_SHARE_VOLUME="${NAME}-share"
+GCP_UTIL="/usr/bin/gcp-connector-util"
+GCP_CONF_VOLUME="${NAME}-gcp-conf"
+GCP_CONF_DIR="/etc/gcp"
+GCP_CONF_FILE="$GCP_CONF_DIR/gcp-cups-connector.config.json"
 
 cmd() {
      	sudo docker container exec -t -i $NAME $*
@@ -23,11 +27,11 @@ start() {
 		--name $NAME \
 		--hostname $NAME \
 		--network host \
-		-v $DATA_VOLUME:/var/spool/cups \
-		-v $CONF_VOLUME:/etc/cups \
-		-v $CACHE_VOLUME:/var/cache/cups \
-		-v $SHARE_VOLUME:/usr/share/cups \
-		-v "$PWD"/dropbox:/dropbox \
+		-v $CUPS_DATA_VOLUME:/var/spool/cups \
+		-v $CUPS_CONF_VOLUME:/etc/cups \
+		-v $CUPS_CACHE_VOLUME:/var/cache/cups \
+		-v $CUPS_SHARE_VOLUME:/usr/share/cups \
+		-v $GCP_CONF_VOLUME:$GCP_CONF_DIR \
 		beehache/$NAME:$VERSION
 }
 
@@ -42,7 +46,7 @@ restart() {
 
 
 usage() {
-	echo "Usage : ${BASENAME}.sh [-s | start] | [-S | stop] | [-b | build] | [[-e | exec] ...]"
+	echo "Usage : ${BASENAME}.sh [-s | start] | [-S | stop] | [-b | build] | [[-e | exec] ...] | [shell ...] | gcp-config"
 }
 
 case $1 in
@@ -63,6 +67,12 @@ case $1 in
 		;;
 	'shell')
 		cmd /bin/bash
+		;;
+	'gcp-config')
+		cmd $GCP_UTIL --config-filename $GCP_CONF_FILE init;
+		cmd $GCP_UTIL --config-filename $GCP_CONF_FILE backfill-config-file;
+		cmd chown cloud-print-connector:cloud-print-connector $GCP_CONF_FILE;
+		cmd service gcp restart
 		;;
 	'update')
 		cmd /tools/copy_dropfiles.sh
